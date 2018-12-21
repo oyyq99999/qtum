@@ -252,7 +252,7 @@ UniValue transactionReceiptToJSON(const dev::eth::TransactionReceipt& txRec)
 {
     UniValue result(UniValue::VOBJ);
     result.push_back(Pair("stateRoot", txRec.stateRoot().hex()));
-    result.push_back(Pair("gasUsed", CAmount(txRec.gasUsed())));
+    result.push_back(Pair("gasUsed", CAmount(txRec.cumulativeGasUsed())));
     result.push_back(Pair("bloom", txRec.bloom().hex()));
     UniValue logEntries(UniValue::VARR);
     dev::eth::LogEntries logs = txRec.log();
@@ -804,7 +804,7 @@ UniValue getaccountinfo(const JSONRPCRequest& request)
     for (auto j: storage)
     {
         UniValue e(UniValue::VOBJ);
-        e.push_back(Pair(dev::toHex(j.second.first), dev::toHex(j.second.second)));
+        e.push_back(Pair(dev::toHex(dev::h256(j.second.first)), dev::toHex(dev::h256(j.second.second))));
         storageUV.push_back(Pair(j.first.hex(), e));
     }
         
@@ -887,7 +887,7 @@ UniValue getstorage(const JSONRPCRequest& request)
     for (const auto& j: storage)
     {
         UniValue e(UniValue::VOBJ);
-        e.push_back(Pair(dev::toHex(j.second.first), dev::toHex(j.second.second)));
+        e.push_back(Pair(dev::toHex(dev::h256(j.second.first)), dev::toHex(dev::h256(j.second.second))));
         result.push_back(Pair(j.first.hex(), e));
     }
     return result;
