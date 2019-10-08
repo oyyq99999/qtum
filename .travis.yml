@@ -45,8 +45,8 @@ jobs:
       name: 'x86_64 Linux  [GOAL: functinal test]  [xenial]  [no depends, only system libs, sanitizers: thread (TSan), no wallet]'
       env: >-
         HOST=""
-        RUN_FUZZ_TESTS=true
-        PACKAGES="clang llvm qtbase5-dev qttools5-dev-tools libssl-dev libevent-dev bsdmainutils libboost-all-dev libprotobuf-dev protobuf-compiler qrencode"
+        RUN_FUZZ_TESTS=false
+        PACKAGES="clang llvm qtbase5-dev qttools5-dev-tools libssl-dev libevent-dev bsdmainutils libboost-all-dev libprotobuf-dev protobuf-compiler qrencode libgmp-dev"
         NO_DEPENDS=1
         GOAL="install"
         QTUM_CONFIG="--enable-bitcore-rpc CC=clang CXX=clang++"
@@ -57,7 +57,7 @@ jobs:
         HOST="x86_64-apple-darwin14"
         RUN_UNIT_TESTS=false
         RUN_FUNCTIONAL_TESTS=false
-        PACKAGES="clang llvm qtbase5-dev qttools5-dev-tools libssl-dev libevent-dev bsdmainutils libboost-all-dev libprotobuf-dev protobuf-compiler qrencode"
+        PACKAGES="clang llvm qtbase5-dev qttools5-dev-tools libssl-dev libevent-dev bsdmainutils libboost-all-dev libprotobuf-dev protobuf-compiler qrencode libgmp-dev"
         NO_DEPENDS=1
         GOAL="install"
         QTUM_CONFIG="CC=clang CXX=clang++"
