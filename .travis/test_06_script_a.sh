@@ -11,17 +11,17 @@ export TRAVIS_COMMIT_LOG
 
 QTUM_CONFIG_ALL=""
 if [ -z "$NO_DEPENDS" ]; then
-  DOCKER_EXEC ccache --max-size=$CCACHE_SIZE
+  ccache --max-size=$CCACHE_SIZE
 fi
 
 BEGIN_FOLD autogen
-DOCKER_EXEC ./autogen.sh
+./autogen.sh
 END_FOLD
 
 BEGIN_FOLD configure
-DOCKER_EXEC ./configure --cache-file=../config.cache $QTUM_CONFIG_ALL $QTUM_CONFIG || ( cat config.log && false)
+./configure --cache-file=../config.cache $QTUM_CONFIG_ALL $QTUM_CONFIG || ( cat config.log && false)
 END_FOLD
 
 BEGIN_FOLD build
-DOCKER_EXEC make $MAKEJOBS $GOAL || ( echo "Build failure. Verbose build follows." && DOCKER_EXEC make $GOAL V=1 ; false )
+sudo make $MAKEJOBS $GOAL || ( echo "Build failure. Verbose build follows." && make $GOAL V=1 ; false )
 END_FOLD

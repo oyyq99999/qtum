@@ -1,21 +1,17 @@
-dist: xenial
 os: linux
+dist: bionic
 language: minimal
 git:
   depth: 2
 cache:
   ccache: true
   directories:
-    - depends/built
-    - depends/sdk-sources
-    - $HOME/.ccache
-services:
-  - docker
+    - $TRAVIS_BUILD_DIR/src
 stages:
   - test
 env:
   global:
-    - MAKEJOBS=-j3
+    - MAKEJOBS=-j2
     - RUN_UNIT_TESTS=true
     - RUN_FUNCTIONAL_TESTS=true
     - RUN_FUZZ_TESTS=false
@@ -33,8 +29,11 @@ install:
 before_script:
   - set -o errexit; source .travis/test_05_before_script.sh
 script:
-  - if [ $SECONDS -gt 1200 ]; then set +o errexit; echo "Travis early exit to cache current state"; false; else set -o errexit; source .travis/test_06_script_a.sh; fi
-  - if [ $SECONDS -gt 1800 ]; then set +o errexit; echo "Travis early exit to cache current state"; false; else set -o errexit; source .travis/test_06_script_b.sh; fi
+  - export CONTINUE=1
+  - if [ $SECONDS - gt 800]; then export CONTINUE=0; fi # likely the depends build took very long
+  - if [ $CONTINUE = "1" ]; then set -o errexit; source .travis/test_06_script_a.sh; else set +o errexit; echo "The depends took too long to prepare, exit to cache current state"; false; fi
+  - if [ $SECONDS -gt 1800 ]; then export CONTINUE=0; fi
+  - if [ $CONTINUE = "1" ]; then set -o errexit; source .travis/test_06_script_b.sh; else set +o errexit; echo "The build took too long, exit to cache current state"; false; fi
 after_script:
   - echo $TRAVIS_COMMIT_RANGE
   - echo $TRAVIS_COMMIT_LOG
@@ -45,11 +44,12 @@ jobs:
       name: 'x86_64 Linux  [GOAL: functinal test]  [xenial]  [no depends, only system libs, sanitizers: thread (TSan), no wallet]'
       env: >-
         HOST=""
+        RUN_UNIT_TESTS=false
         RUN_FUZZ_TESTS=false
-        PACKAGES="clang llvm qtbase5-dev qttools5-dev-tools libssl-dev libevent-dev bsdmainutils libboost-all-dev libprotobuf-dev protobuf-compiler qrencode libgmp-dev"
+        PACKAGES="clang llvm libssl-dev libevent-dev bsdmainutils libboost-all-dev libgmp-dev"
         NO_DEPENDS=1
-        GOAL="install"
-        QTUM_CONFIG="--enable-bitcore-rpc CC=clang CXX=clang++"
+        GOAL=""
+        QTUM_CONFIG="--enable-bitcore-rpc --with-gui=no CC=clang CXX=clang++"
 
     - stage: test
       name: 'macOS 10.10  [GOAL: build]'
@@ -57,7 +57,7 @@ jobs:
         HOST="x86_64-apple-darwin14"
         RUN_UNIT_TESTS=false
         RUN_FUNCTIONAL_TESTS=false
-        PACKAGES="clang llvm qtbase5-dev qttools5-dev-tools libssl-dev libevent-dev bsdmainutils libboost-all-dev libprotobuf-dev protobuf-compiler qrencode libgmp-dev"
+        PACKAGES="clang llvm libssl-dev libevent-dev bsdmainutils libboost-all-dev libgmp-dev"
         NO_DEPENDS=1
         GOAL="install"
-        QTUM_CONFIG="CC=clang CXX=clang++"
+        QTUM_CONFIG="--with-gui=no CC=clang CXX=clang++"
