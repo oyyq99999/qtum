@@ -44,7 +44,7 @@ jobs:
       name: 'x86_64 Linux  [GOAL: functinal test]  [xenial]  [no depends, only system libs, sanitizers: thread (TSan), no wallet]'
       env: >-
         HOST=""
-        RUN_UNIT_TESTS=false
+        RUN_UNIT_TESTS=true
         RUN_FUNCTIONAL_TESTS=true
         RUN_FUZZ_TESTS=false
         PACKAGES="clang llvm libssl-dev libevent-dev bsdmainutils libboost-all-dev libgmp-dev"
