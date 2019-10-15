@@ -14,7 +14,7 @@ fi
 
 if [ "$RUN_FUNCTIONAL_TESTS" = "true" ]; then
   BEGIN_FOLD functional-tests
-  test/functional/test_runner.py --combinedlogslen=500 --coverage --exclude feature_assumevalid
+  test/functional/test_runner.py --combinedlogslen=500 --coverage --exclude feature_assumevalid,qtum_duplicate_stake
   END_FOLD
 fi
 
