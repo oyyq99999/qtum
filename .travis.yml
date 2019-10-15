@@ -6,7 +6,7 @@ git:
 cache:
   ccache: true
   directories:
-    - $TRAVIS_BUILD_DIR/src
+    - $HOME/.ccache
 stages:
   - test
 env:
@@ -45,6 +45,7 @@ jobs:
       env: >-
         HOST=""
         RUN_UNIT_TESTS=false
+        RUN_FUNCTIONAL_TESTS=true
         RUN_FUZZ_TESTS=false
         PACKAGES="clang llvm libssl-dev libevent-dev bsdmainutils libboost-all-dev libgmp-dev"
         NO_DEPENDS=1
