@@ -30,10 +30,10 @@ before_script:
   - set -o errexit; source .travis/test_05_before_script.sh
 script:
   - export CONTINUE=1
-  - if [ $SECONDS - gt 800]; then export CONTINUE=0; fi # likely the depends build took very long
-  - if [ $CONTINUE = "1" ]; then set -o errexit; source .travis/test_06_script_a.sh; else set +o errexit; echo "The depends took too long to prepare, exit to cache current state"; false; fi
-  - if [ $SECONDS -gt 1800 ]; then export CONTINUE=0; fi
-  - if [ $CONTINUE = "1" ]; then set -o errexit; source .travis/test_06_script_b.sh; else set +o errexit; echo "The build took too long, exit to cache current state"; false; fi
+  - if [[ $SECONDS -gt 800 ]]; then export CONTINUE=0; fi # likely the depends build took very long
+  - if [[ $CONTINUE = "1" ]]; then set -o errexit; source .travis/test_06_script_a.sh; else set +o errexit; echo "The depends took too long to prepare, exit to cache current state"; false; fi
+  - if [[ $SECONDS -gt 1800 && $RUN_FUNCTIONAL_TESTS = "true" ]]; then export CONTINUE=0; fi
+  - if [[ $CONTINUE = "1" ]]; then set -o errexit; source .travis/test_06_script_b.sh; else set +o errexit; echo "The build took too long, exit to cache current state"; false; fi
 after_script:
   - echo $TRAVIS_COMMIT_RANGE
   - echo $TRAVIS_COMMIT_LOG
@@ -41,11 +41,11 @@ jobs:
   include:
 
     - stage: test
-      name: 'x86_64 Linux  [GOAL: functinal test]  [xenial]  [no depends, only system libs, sanitizers: thread (TSan), no wallet]'
+      name: 'x86_64 Linux  [GOAL: unit test]  [bionic]'
       env: >-
         HOST=""
         RUN_UNIT_TESTS=true
-        RUN_FUNCTIONAL_TESTS=true
+        RUN_FUNCTIONAL_TESTS=false
         RUN_FUZZ_TESTS=false
         PACKAGES="clang llvm libssl-dev libevent-dev bsdmainutils libboost-all-dev libgmp-dev"
         NO_DEPENDS=1
@@ -53,12 +53,13 @@ jobs:
         QTUM_CONFIG="--enable-bitcore-rpc --with-gui=no CC=clang CXX=clang++"
 
     - stage: test
-      name: 'macOS 10.10  [GOAL: build]'
+      name: 'x86_64 Linux  [GOAL: functional test]  [bionic]'
       env: >-
-        HOST="x86_64-apple-darwin14"
+        HOST=""
         RUN_UNIT_TESTS=false
-        RUN_FUNCTIONAL_TESTS=false
+        RUN_FUNCTIONAL_TESTS=true
+        RUN_FUZZ_TESTS=false
         PACKAGES="clang llvm libssl-dev libevent-dev bsdmainutils libboost-all-dev libgmp-dev"
         NO_DEPENDS=1
-        GOAL="install"
-        QTUM_CONFIG="--with-gui=no CC=clang CXX=clang++"
+        GOAL=""
+        QTUM_CONFIG="--enable-bitcore-rpc --with-gui=no CC=clang CXX=clang++"
